@@ -1,15 +1,15 @@
 #include "PIG.h"
 
 PIG_Evento evento;          //evento ser tratado a cada passada do loop principal
-PIG_Teclado meuTeclado;     //vari·vel como mapeamento do teclado
+PIG_Teclado meuTeclado;     //vari√°vel como mapeamento do teclado
 
 
 int main( int argc, char* args[] ){
 
-    //criando o jogo (aplicaÁ„o)
+    //criando o jogo (aplica√ß√£o)
     CriaJogo("Meu Jogo");
 
-    //associando o teclado (basta uma ˙nica vez) com a vari·vel meuTeclado
+    //associando o teclado (basta uma √∫nica vez) com a vari√°vel meuTeclado
     meuTeclado = GetTeclado();
     PIG_Cor cor;
     cor.r = 255;
@@ -17,25 +17,39 @@ int main( int argc, char* args[] ){
     cor.g = 0;
     cor.a = 180;
 
+
+    int personagem = CriaSprite("..//imagens//sprite andando.png");
+    MoveSprite(personagem, 50, 50);
+    CriaFrameSprite(personagem, 1, 0, 0, 572 , 572);
+    CarregaArquivoFramesSprite(personagem, "..//imagens//spritePersonagem.png");
+    MudaFrameSprite(personagem, 1);
+    SetDimensoesSprite(personagem, 100,100);
+
     //loop principal do jogo
     while(JogoRodando()){
 
-        //pega um evento que tenha ocorrido desde a ˙ltima passada do loop
+        //pega um evento que tenha ocorrido desde a √∫ltima passada do loop
         evento = GetEvento();
 
         //aqui o evento deve ser tratado e tudo deve ser atualizado
 
-        //ser· feita a preparaÁ„o do frame que ser· exibido na tela
+        //ser√° feita a prepara√ß√£o do frame que ser√° exibido na tela
         IniciaDesenho();
 
         //todas as chamadas de desenho devem ser feitas aqui na ordem desejada
+         DesenhaSprite(personagem);
+         MoveSprite(personagem, 100, 50);
+         MudaFrameSprite(personagem, 2);
+        DesenhaSprite(personagem);
+        MoveSprite(personagem, 200, 50);
+        MudaFrameSprite(personagem, 3);
+        DesenhaSprite(personagem);
 
-
-        //o frame totalmente pronto ser· mostrado na tela
+        //o frame totalmente pronto ser√° mostrado na tela
         EncerraDesenho();
     }
 
-    //o jogo ser· encerrado
+    //o jogo ser√° encerrado
     FinalizaJogo();
 
     return 0;
