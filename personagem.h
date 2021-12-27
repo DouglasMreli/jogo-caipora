@@ -4,7 +4,7 @@
 class Personagem {
 public:
     int vida, x, y;
-    int sprite;
+    int sprite, animacao;
     bool caindo = false;
 
     Personagem(int v, int x1, int y1) {
@@ -27,6 +27,7 @@ public:
             sprite = CriaSprite(arqPng);
             MoveSprite(sprite, 50, 50);
             CarregaArquivoFramesSprite(sprite, arqTxt);
+
             MudaFrameSprite(sprite, 1);
             SetDimensoesSprite(sprite, 100,100);
     }
@@ -43,20 +44,33 @@ public:
             caindo = false;
         }
     }*/
+    int Andando() {
+        switch(GetFrameAtualSprite(sprite)) {
+            case 1: MudaFrameSprite(sprite, 2); break;
+            case 2: MudaFrameSprite(sprite, 3); break;
+            case 3: MudaFrameSprite(sprite, 4); break;
+            case 4: MudaFrameSprite(sprite, 5); break;
+            case 5: MudaFrameSprite(sprite, 6); break;
+            case 6: MudaFrameSprite(sprite, 7); break;
+            case 7: MudaFrameSprite(sprite, 8); break;
+            case 8: MudaFrameSprite(sprite, 9); break;
+            case 9: MudaFrameSprite(sprite, 10); break;
+            case 10: MudaFrameSprite(sprite, 1); break;
+            }
+    }
 
     void MovePersonagem(PIG_Teclado& meuTeclado, int& timer, int&repeticao) {
-            if(TempoDecorrido(timer) > 0.05) {
+            if(TempoDecorrido(timer) > 0.03) {
 
                 if(meuTeclado[PIG_TECLA_DIREITA] != 0) {
+                    Andando();
                     SetFlipSprite(sprite, PIG_FLIP_NENHUM);
                     DeslocaSprite(sprite, +5, 0);
 
                 }
                 if(meuTeclado[PIG_TECLA_ESQUERDA] != 0) {
-
+                    Andando();
                     SetFlipSprite(sprite, PIG_FLIP_HORIZONTAL);
-
-
                     DeslocaSprite(sprite, -5, 0);
 
                 }
@@ -69,6 +83,8 @@ public:
                 }*/
                 ReiniciaTimer(timer);
             }
+
+            GetXYSprite(sprite, &x, &y);
     }
 
 };
