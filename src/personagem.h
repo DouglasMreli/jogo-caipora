@@ -1,12 +1,16 @@
 #ifndef PERSONAGEM_H_INCLUDED
 #define PERSONAGEM_H_INCLUDED
 
+#define V_0 500
+#define GRAV -800/5
+
 class Personagem {
 
 private:
     int vida = 5;
     int x, y;
     int objeto, animacao;
+    int timerTeclado, timerPulo;
     bool parado, andando, pulando, caindo;
 
     int Andando() {
@@ -28,8 +32,8 @@ private:
             caindo = true;
     }
 
-    void playerCaindo(int &timer) {
-        int t =TempoDecorrido(timer);
+    void playerCaindo() {
+        int t =TempoDecorrido(timerPulo);
         if(t > 0.05) {
             int d = y + (0.1*t) - (0.1*t*t);
             DeslocaObjeto(objeto, 0, d);
@@ -56,6 +60,14 @@ public:
         return y;
     }
 
+    void SetTimerTeclado(int t) {
+        timerTeclado = t;
+    }
+
+    void SetTimerPulo(int t) {
+        timerPulo = t;
+    }
+
     void CriaPersonagem(char *arqPng, char *arqTxt) {
             objeto = CriaObjeto(arqPng);
             MoveObjeto(objeto, 350, 50);
@@ -70,8 +82,8 @@ public:
 
     }
 
-    void MovePersonagem(PIG_Teclado& meuTeclado, int& timer, int objeto2, int xB, int yB) {
-            if(TempoDecorrido(timer) > 0.03) {
+    void MovePersonagem(PIG_Teclado& meuTeclado, int objeto2, int xB, int yB) {
+            if(TempoDecorrido(timerTeclado) > 0.03) {
 
                 if(meuTeclado[PIG_TECLA_DIREITA] != 0) {
                     Andando();
@@ -91,13 +103,14 @@ public:
                 }
 
                 if(caindo) {
-                    playerCaindo(timer);
+                    playerCaindo();
                 }else {
                     if(meuTeclado[PIG_TECLA_CIMA] != 0 || meuTeclado[PIG_TECLA_BARRAESPACO] != 0) {
+                        timerPulo = CriaTimer();
                         caindo = true;
                     }
                 }
-                ReiniciaTimer(timer);
+                ReiniciaTimer(timerTeclado);
             }
 
             GetXYObjeto(objeto, &x, &y);
