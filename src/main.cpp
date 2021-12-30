@@ -2,15 +2,15 @@
 #include "personagem.h"
 
 PIG_Evento evento;          //evento ser tratado a cada passada do loop principal
-PIG_Teclado meuTeclado;     //vari·vel como mapeamento do teclado
+PIG_Teclado meuTeclado;     //vari√°vel como mapeamento do teclado
 
 
 int main( int argc, char* args[] ){
 
-    //criando o jogo (aplicaÁ„o)
+    //criando o jogo (aplica√ß√£o)
     CriaJogo("Meu Jogo");
 
-    //associando o teclado (basta uma ˙nica vez) com a vari·vel meuTeclado
+    //associando o teclado (basta uma √∫nica vez) com a vari√°vel meuTeclado
     meuTeclado = GetTeclado();
     PIG_Cor cor;
     cor.r = 255;
@@ -18,41 +18,48 @@ int main( int argc, char* args[] ){
     cor.g = 0;
     cor.a = 180;
 
-
+    //SetModoJanela(PIG_JANELA_TELACHEIA_DISPLAY);
     DefineFundo("..//imagens//florestaFundo.png");
 
-    Personagem player(100, 100, 50);
+    Personagem player(100, 50);
     player.CriaFramePersonagem("..//imagens//sprite andando.png", "..//imagens//spritePersonagem.txt");
-    MoveSprite(player.getSprite(), player.getX(), player.getY());
 
     int timer = CriaTimer();
-    double t;
-    int repeticao;
+
+    int chao = CriaObjeto("..//imagens//chao.png");
+    MoveObjeto(chao,500, 0);
+    SetDimensoesObjeto(chao, 50,100);
+    int xChao, yChao;
     //loop principal do jogo
     while(JogoRodando()) {
 
-        //pega um evento que tenha ocorrido desde a ˙ltima passada do loop
+        PreparaCameraMovel();
+        //pega um evento que tenha ocorrido desde a √∫ltima passada do loop
         evento = GetEvento();
 
         //aqui o evento deve ser tratado e tudo deve ser atualizado
 
-        player.MovePersonagem(meuTeclado, timer, repeticao);
+        player.MovePersonagem(meuTeclado, timer, chao, xChao, yChao);
 
-
-        //ser· feita a preparaÁ„o do frame que ser· exibido na tela
+        //ser√° feita a prepara√ß√£o do frame que ser√° exibido na tela
         IniciaDesenho();
 
         //todas as chamadas de desenho devem ser feitas aqui na ordem desejada
 
-        DesenhaSprite(player.getSprite());
+        DesenhaObjeto(player.getObjeto());
+        DesenhaObjeto(chao);
+
+        PreparaCameraFixa();
+
         EscreveDoubleEsquerda(GetFPS(), 1, 0, PIG_ALT_TELA - 100, {255,0,255,255});
         EscreveInteiroCentralizado(player.getX(), 100, 300);
         EscreveInteiroCentralizado(player.getY(), 100, 350);
-        //o frame totalmente pronto ser· mostrado na tela
+
+        //o frame totalmente pronto ser√° mostrado na tela
         EncerraDesenho();
     }
 
-    //o jogo ser· encerrado
+    //o jogo ser√° encerrado
     FinalizaJogo();
 
     return 0;
