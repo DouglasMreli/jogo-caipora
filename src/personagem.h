@@ -4,49 +4,50 @@
 class Personagem {
 
 private:
-    int vida, x, y;
-    int sprite, animacao;
-    bool caindo = false;
-    bool subindo = false;
+    int vida = 5;
+    int x, y;
+    int objeto, animacao;
+    bool parado, andando, pulando, caindo;
 
     int Andando() {
-        switch(GetFrameAtualSprite(sprite)) {
-            case 1: MudaFrameSprite(sprite, 2); break;
-            case 2: MudaFrameSprite(sprite, 3); break;
-            case 3: MudaFrameSprite(sprite, 4); break;
-            case 4: MudaFrameSprite(sprite, 5); break;
-            case 5: MudaFrameSprite(sprite, 6); break;
-            case 6: MudaFrameSprite(sprite, 7); break;
-            case 7: MudaFrameSprite(sprite, 8); break;
-            case 8: MudaFrameSprite(sprite, 9); break;
-            case 9: MudaFrameSprite(sprite, 10); break;
-            case 10: MudaFrameSprite(sprite, 1); break;
+        switch(GetFrameAtualObjeto(objeto)) {
+            case 1: MudaFrameObjeto(objeto, 2); break;
+            case 2: MudaFrameObjeto(objeto, 3); break;
+            case 3: MudaFrameObjeto(objeto, 4); break;
+            case 4: MudaFrameObjeto(objeto, 5); break;
+            case 5: MudaFrameObjeto(objeto, 6); break;
+            case 6: MudaFrameObjeto(objeto, 7); break;
+            case 7: MudaFrameObjeto(objeto, 8); break;
+            case 8: MudaFrameObjeto(objeto, 9); break;
+            case 9: MudaFrameObjeto(objeto, 10); break;
+            case 10: MudaFrameObjeto(objeto, 1); break;
             }
     }
 
-    /* void Pulo() {
+    void Pulo() {
             caindo = true;
     }
 
     void playerCaindo(int &timer) {
         int t =TempoDecorrido(timer);
-        int d = y + (5*t) - (10*t*t);
-        DeslocaSprite(sprite, 0, d);
-        if(d == 0) {
-            caindo = false;
+        if(t > 0.05) {
+            int d = y + (0.1*t) - (0.1*t*t);
+            DeslocaObjeto(objeto, 0, d);
+            if(d == 50) {
+                caindo = false;
+            }
         }
-    }*/
+    }
 
 public:
 
-    Personagem(int v, int x1, int y1) {
-        vida = v;
+    Personagem(int x1, int y1) {
         x = x1;
         y = y1;
     }
 
-    int getSprite(){
-        return sprite;
+    int getObjeto(){
+        return objeto;
     }
     int getX() {
         return x;
@@ -55,41 +56,51 @@ public:
         return y;
     }
 
-    void CriaFramePersonagem(char *arqPng, char *arqTxt) {
-            sprite = CriaSprite(arqPng);
-            MoveSprite(sprite, 50, 50);
-            CarregaArquivoFramesSprite(sprite, arqTxt);
+    void CriaPersonagem(char *arqPng, char *arqTxt) {
+            objeto = CriaObjeto(arqPng);
+            MoveObjeto(objeto, 350, 50);
+            CarregaArquivoFramesObjeto(objeto, arqTxt);
 
-            MudaFrameSprite(sprite, 1);
-            SetDimensoesSprite(sprite, 100,100);
+            MudaFrameObjeto(objeto, 1);
+            SetDimensoesObjeto(objeto, 100,100);
+            parado = true;
+            andando = false;
+            pulando = false;
+            caindo = false;
+
     }
 
-    void MovePersonagem(PIG_Teclado& meuTeclado, int& timer, int&repeticao) {
+    void MovePersonagem(PIG_Teclado& meuTeclado, int& timer, int objeto2, int xB, int yB) {
             if(TempoDecorrido(timer) > 0.03) {
 
                 if(meuTeclado[PIG_TECLA_DIREITA] != 0) {
                     Andando();
-                    SetFlipSprite(sprite, PIG_FLIP_NENHUM);
-                    DeslocaSprite(sprite, +5, 0);
-
+                    SetFlipObjeto(objeto, PIG_FLIP_NENHUM);
+                    if(xB > x || !TestaColisaoObjetos(objeto,objeto2)) {
+                        DeslocaObjeto(objeto, +5, 0);
+                        DeslocaCamera(+5, 0);
+                    }
                 }
                 if(meuTeclado[PIG_TECLA_ESQUERDA] != 0) {
                     Andando();
-                    SetFlipSprite(sprite, PIG_FLIP_HORIZONTAL);
-                    DeslocaSprite(sprite, -5, 0);
-
+                    SetFlipObjeto(objeto, PIG_FLIP_HORIZONTAL);
+                    if(xB < x || !TestaColisaoObjetos(objeto,objeto2)) {
+                        DeslocaObjeto(objeto, -5, 0);
+                        DeslocaCamera(-5, 0);
+                    }
                 }
-               /* if(caindo) {
+
+                if(caindo) {
                     playerCaindo(timer);
                 }else {
                     if(meuTeclado[PIG_TECLA_CIMA] != 0 || meuTeclado[PIG_TECLA_BARRAESPACO] != 0) {
                         caindo = true;
                     }
-                }*/
+                }
                 ReiniciaTimer(timer);
             }
 
-            GetXYSprite(sprite, &x, &y);
+            GetXYObjeto(objeto, &x, &y);
     }
 
 };
