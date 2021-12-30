@@ -22,9 +22,8 @@ int main( int argc, char* args[] ){
     DefineFundo("..//imagens//florestaFundo.png");
 
     Personagem player(100, 50);
-    player.CriaFramePersonagem("..//imagens//sprite andando.png", "..//imagens//spritePersonagem.txt");
-
-    int timer = CriaTimer();
+    player.CriaPersonagem("..//imagens//sprite andando.png", "..//imagens//spritePersonagem.txt");
+    player.SetTimerTeclado(CriaTimer());
 
     int chao = CriaObjeto("..//imagens//chao.png");
     MoveObjeto(chao,500, 0);
@@ -39,7 +38,7 @@ int main( int argc, char* args[] ){
 
         //aqui o evento deve ser tratado e tudo deve ser atualizado
 
-        player.MovePersonagem(meuTeclado, timer, chao, xChao, yChao);
+        player.MovePersonagem(meuTeclado, chao, xChao, yChao);
 
         //será feita a preparação do frame que será exibido na tela
         IniciaDesenho();
