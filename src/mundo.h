@@ -26,6 +26,7 @@ public:
             DesenhaObjeto(plataformas[i]);
         }
     }
+
 };
 
 
