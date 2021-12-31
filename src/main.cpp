@@ -1,16 +1,14 @@
+#include <vector>
+
 #include "PIG.h"
 #include "personagem.h"
 #include "mundo.h"
-#include <vector>
+#include "hud.h"
+
 
 PIG_Evento evento;          //evento ser tratado a cada passada do loop principal
 PIG_Teclado meuTeclado;     //variável como mapeamento do teclado
 
-void DesenhaCoracoes(vector<int> c) {
-    for(int i = 0; i < c.size(); i++) {
-        DesenhaObjeto(c[i]);
-    }
-}
 
 int main( int argc, char* args[] ){
 
@@ -29,22 +27,19 @@ int main( int argc, char* args[] ){
     DefineFundo("..//imagens//florestaFundo.png");
 
     Personagem player(100, 50);
-    player.CriaPersonagem("..//imagens//sprite andando.png", "..//imagens//spritePersonagem.txt");
+    player.CriaPersonagem("..//imagens//sprite_andando.png", "..//imagens//spritePersonagem.txt");
     player.SetTimerTeclado(CriaTimer());
 
     Mundo mundo(20);
     mundo.CriaChao();
 
-    vector<int> coracoes;
-
-    for(int i = 0; i < player.getVida(); i++) {
-        int coracao = CriaObjeto("..//imagens//coracao.png");
-        MoveObjeto(coracao, 100 + i*30, PIG_ALT_TELA-100);
-        SetDimensoesObjeto(coracao, 30, 30);
-        coracoes.push_back(coracao);
-    }
-
+    Hud hud;
+    hud.CriaVidas(player.getVida());
     int xChao, yChao;
+
+    int gameOver = CriaSprite("..//imagens//gameover.png", 0);
+    MoveSprite(gameOver, 200, 150);
+    SetDimensoesSprite(gameOver, 400,400);
     //loop principal do jogo
     while(JogoRodando()) {
 
@@ -54,22 +49,31 @@ int main( int argc, char* args[] ){
 
         //aqui o evento deve ser tratado e tudo deve ser atualizado
 
-        player.MovePersonagem(meuTeclado, mundo.plataformas[1], xChao, yChao);
+        if(player.getVida() >= 0) {
+            player.MovePersonagem(meuTeclado, mundo.plataformas);
+            player.VerificaDano();
+        }
+
 
         //será feita a preparação do frame que será exibido na tela
         IniciaDesenho();
 
         //todas as chamadas de desenho devem ser feitas aqui na ordem desejada
 
-        DesenhaObjeto(player.getObjeto());
+        DesenhaAnimacao(player.getAnimacao());
         mundo.DesenhaChao();
 
         PreparaCameraFixa();
 
-       //DesenhaCoracoes(coracoes);
+        hud.DesenhaVidas(player.getVida());
         EscreveDoubleDireita(GetFPS(), 1, PIG_LARG_TELA-100, PIG_ALT_TELA - 100, {255,0,255,255});
         EscreveInteiroCentralizado(player.getX(), 100, 300);
         EscreveInteiroCentralizado(player.getY(), 100, 350);
+        EscreveInteiroCentralizado(player.getVida(), 100, 400, VERMELHO);
+
+        if(player.getVida() <= 0) {
+            DesenhaSprite(gameOver);
+        }
 
         //o frame totalmente pronto será mostrado na tela
         EncerraDesenho();
