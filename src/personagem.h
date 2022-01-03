@@ -159,7 +159,7 @@ public:
         estados e atualizando as posições */
     void MovePersonagem(PIG_Teclado& meuTeclado, vector<int>& plat) {
 
-            GetXYAnimacao(animacao, &xAnterior, &yAnterior);
+            GetXYAnimacao(animacao, &xAnterior, &yAnterior); // guardando a posiçao nas variaveis auxiliar
 
             if(TempoDecorrido(timerTeclado) > 0.03) {
 
@@ -169,54 +169,59 @@ public:
                     SetFlipAnimacao(animacao, PIG_FLIP_NENHUM); // flipando a imagem para o lado direito
 
                     DeslocaAnimacao(animacao, +5, 0);
-                    DeslocaCamera(+5, 0); // movendo a câmera
+                    DeslocaCamera(+5, 0); // movendo a câmera para acompanhar o personagem
 
-                }else if(meuTeclado[PIG_TECLA_ESQUERDA] != 0) {
+                }else if(meuTeclado[PIG_TECLA_ESQUERDA] != 0) { // andando para a esquerda
                     andando = true;
                     parado = false;
-                    SetFlipAnimacao(animacao, PIG_FLIP_HORIZONTAL);
+                    SetFlipAnimacao(animacao, PIG_FLIP_HORIZONTAL); // flipando o personagem para a esquerda
 
                     DeslocaAnimacao(animacao, -5, 0);
+                    DeslocaCamera(-5, 0);// movendo a câmera para acompanhar o personagem
 
-                    DeslocaCamera(-5, 0);
-
-                }else {
+                }else { // mudando o estado do personagem para parado, caso não tenha tecla pressionada
                     andando = false;
                     parado = true;
                 }
 
-                GetXYAnimacao(animacao, &x, &y);
+                GetXYAnimacao(animacao, &x, &y); // guardando a nova posição do personagem nas variáveis
 
                 if(!pulando && !caindo) {
+                        /* Se o personagem não estiver caindo e o pulo não tiver sido acionado
+                            seu estado mudara e o timer do pulo vai recomeçar
+                        */
                     if(meuTeclado[PIG_TECLA_CIMA] != 0 || meuTeclado[PIG_TECLA_BARRAESPACO] != 0) {
                         ReiniciaTimer(timerPulo);
                         pulando = true;
                         parado = false;
                         andando = false;
-                        salto = y++;
+                        salto = y++; // salto recebe y+1 para marcar a posição inicial do pulo
                     }
                 }
 
-                if(pulando) {
+                if(pulando) { // se o estado do personagem pulando for verdadeiro, sua posição será atualizada
                     y = pulo();
                     MoveAnimacao(animacao, x, y);
-                }else if(caindo) {
+                }else if(caindo) { // se o estado do personagem caindo for verdadeiro, sua posição será atualizada
                     y = queda();
                     MoveAnimacao(animacao, x, y);
                 }
 
 
                 mudaAnimacao();
-                plataformaAtual = VerificaColisao(plat);
-
+                plataformaAtual = VerificaColisao(plat); // verifica se não ouve colisão e guarda a plataforma
+                                                                            // em que se encontra o personagem
                 if(plataformaAtual == -1) {
+                        /*se o personagem não estiver em nenhuma plataforma e
+                            e já não estiver caindo ou pulando, significa que ele deve começar a cair
+                            */
                     if(!pulando && !caindo) {
                         salto = y;
                         ReiniciaTimer(timerPulo);
                         caindo = true;
                     }
                 }else{
-                   // MoveAnimacao(animacao, x, y);
+                   // MoveAnimacao(animacao, x, y);  trecho comentado por mal funcionamento
                 }
 
                 yAnterior = y;
@@ -225,10 +230,12 @@ public:
             }
     }
 
+    // Função responsável por verificar se o personagem está sofrendo dano
     void VerificaDano() {
+        // O personagem pode receber dano a cada 0.5 segundos
         if(TempoDecorrido(timerDano) > 0.5) {
+            //Se a posição do personagem for negativa no eixo y, ele perde dano
             if(y < 0) {
-                EscreverCentralizada("DANO", 300, 300, VERMELHO);
                 vida = vida - 1;
             }
              ReiniciaTimer(timerDano);
