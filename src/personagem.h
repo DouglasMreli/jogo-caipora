@@ -4,18 +4,22 @@
 #define V_0 600
 #define GRAV -800
 
+#define LARG_PERS 80
+
 class Personagem {
 
 private:
-    int vida = 10;
-    int x, y;
-    int salto, yAnterior, xAnterior;
-    int animacao;
-    int timerTeclado, timerPulo, timerDano;
-    bool parado, andando, pulando, caindo;
-    int plataformaAtual;
+    int vida = 10;    // pontos de vida do personagem
+    int x, y;            // posição da personagem no mapa
+    int salto, yAnterior, xAnterior;  // variáveis auxiliares para as funções de movimentação
+    int animacao;  // variável que contem as animações do personagem
+    int timerTeclado, timerPulo, timerDano; // variáveis reservadas para os timers
+    bool parado, andando, pulando, caindo; // variaveis para os estados do personagem
+    int plataformaAtual;  // variável que guarda a plataforma em que o personagem está
+                                    //(recebe -1 quando em nenhuma)
 
 
+    //Essa função muda a animação do personagem de acordo com o estado dele
     void mudaAnimacao() {
 
          if(andando == true && GetModoAtualAnimacao(animacao) != 0) {
@@ -27,21 +31,23 @@ private:
 
     }
 
+    //Essa função calcula o deslocamento do personagem quando estiver pulando;
     int pulo() {
         int py = y;
         float tempo = TempoDecorrido(timerPulo);
-        if (tempo > 0.6) {
-                salto = y;
-                ReiniciaTimer(timerPulo);
+        if (tempo > 0.6) {                           // O personagem sobre por 0.6 segundos
+                salto = y;                              // quando atinge esse tempo, o timer reinicia e personagem
+                ReiniciaTimer(timerPulo);    // passa a cair
                 caindo = true;
                 pulando = false;
         }else{
-            py = salto +( V_0*tempo) + (GRAV*tempo*tempo);
+            py = salto +( V_0*tempo) + (GRAV*tempo*tempo);   //formula de subida do personagem
         }
 
         return py;
     }
 
+    //Função que calcula o deslocamento do personagem enquanto caindo
     int queda() {
         int py;
         float tempo = TempoDecorrido(timerPulo);
@@ -49,36 +55,41 @@ private:
         return py;
     }
 
+    /*  Função que verifica as colisões do personagem com as plataformas
+        Recebe uma lista de plataformas como parâmetro
+        */
     int VerificaColisao(vector<int> plataformas) {
+        // verifica se o personagem permance em cima da mesma plataforma
         if(plataformaAtual != -1) {
             if(TestaColisaoAnimacaoObjeto(animacao, plataformas[plataformaAtual]))
                 return plataformaAtual;
         }
 
-        int alturaPlat, larguraPlat, xPlat, yPlat;
-
+        int alturaPlat, larguraPlat, xPlat, yPlat; // variaveis que recebem os atributos da plataforma
+        //for para percorrer todas as plataformas
         for(int i = 0; i < plataformas.size(); i++) {
             if(TestaColisaoAnimacaoObjeto(animacao, plataformas[i])) {
-
-                GetDimensoesObjeto(plataformas[i], &xPlat, &yPlat);
+                /*Se uma colisão for detectada, a posição do personagem será
+                    atualizada e o estado mudará
+                    */
+                GetXYObjeto(plataformas[i], &xPlat, &yPlat);
                 GetDimensoesObjeto(plataformas[i], &alturaPlat, &larguraPlat);
-                /*if(caindo && yAnterior >= y+alturaPlat) {
-                    y = y+alturaPlat;
+                if(caindo /*&& yAnterior >= yPlat + alturaPlat*/) {
+                    y = yPlat+alturaPlat;
                     caindo = false;
                     parado = true;
                     return i;
-                }*/
-                caindo = false;
-                parado = true;
-                return i;
+                }
+
             }
+
         }
 
         return -1;
     }
 
 public:
-
+    //construtor da classe
     Personagem(int x1, int y1) {
         x = x1;
         y = y1;
@@ -104,7 +115,9 @@ public:
         timerPulo = t;
     }
 
+    //Função responsável por criar os sprites e setar as configurações do personagem
     void CriaPersonagem(char *arqPng, char *arqTxt) {
+            //funções que carrega a animação do personagem
             animacao = CriaAnimacao(arqPng);
             MoveAnimacao(animacao, 0, 100);
             CarregaFramesPorLinhaAnimacao(animacao, 1, 2, 5);
@@ -119,27 +132,44 @@ public:
 
             SetDimensoesAnimacao(animacao, 100,100);
 
+            GetXYAnimacao(animacao, &x, &y);
+            yAnterior = y;
+            xAnterior = x;
+
+            //setando o estado do personagem
             plataformaAtual = 0;
             parado = true;
             andando = false;
             pulando = false;
             caindo = false;
 
+            //Configurando a colisão do personagem
+            int xs[4] = {15, 15, 80, 80};
+            int ys[4] = {6, 70, 6, 70};
+
+            DefineAreaColisaoAnimacao(animacao, xs, ys, 4);
+            DefineTipoColisaoAnimacao(animacao, PIG_COLISAO_POLIGONO);
+
+            // iniciando os timers de pulo
             timerPulo = CriaTimer();
             timerDano = CriaTimer();
     }
 
+    /*Função responsável pela movimentação do personagem, mudando os
+        estados e atualizando as posições */
     void MovePersonagem(PIG_Teclado& meuTeclado, vector<int>& plat) {
+
             GetXYAnimacao(animacao, &xAnterior, &yAnterior);
+
             if(TempoDecorrido(timerTeclado) > 0.03) {
 
-                if(meuTeclado[PIG_TECLA_DIREITA] != 0) {
+                if(meuTeclado[PIG_TECLA_DIREITA] != 0) { // andando para a direita
                     andando = true;
                     parado = false;
-                    SetFlipAnimacao(animacao, PIG_FLIP_NENHUM);
+                    SetFlipAnimacao(animacao, PIG_FLIP_NENHUM); // flipando a imagem para o lado direito
 
                     DeslocaAnimacao(animacao, +5, 0);
-                    DeslocaCamera(+5, 0);
+                    DeslocaCamera(+5, 0); // movendo a câmera
 
                 }else if(meuTeclado[PIG_TECLA_ESQUERDA] != 0) {
                     andando = true;
@@ -147,6 +177,7 @@ public:
                     SetFlipAnimacao(animacao, PIG_FLIP_HORIZONTAL);
 
                     DeslocaAnimacao(animacao, -5, 0);
+
                     DeslocaCamera(-5, 0);
 
                 }else {
@@ -184,9 +215,12 @@ public:
                         ReiniciaTimer(timerPulo);
                         caindo = true;
                     }
+                }else{
+                   // MoveAnimacao(animacao, x, y);
                 }
 
                 yAnterior = y;
+                xAnterior = x;
                 ReiniciaTimer(timerTeclado);
             }
     }
