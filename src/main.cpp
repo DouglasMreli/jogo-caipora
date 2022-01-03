@@ -26,20 +26,26 @@ int main( int argc, char* args[] ){
     //SetModoJanela(PIG_JANELA_TELACHEIA_DISPLAY);
     DefineFundo("..//imagens//florestaFundo.png");
 
+
+    //Criação do personagem
     Personagem player(100, 50);
     player.CriaPersonagem("..//imagens//sprite_andando.png", "..//imagens//spritePersonagem.txt");
     player.SetTimerTeclado(CriaTimer());
 
+    //Criação do mundo
     Mundo mundo(20);
     mundo.CriaChao();
 
+    //Criação do HUD
     Hud hud;
     hud.CriaVidas(player.getVida());
     int xChao, yChao;
 
+    //Sprite para o GameOver
     int gameOver = CriaSprite("..//imagens//gameover.png", 0);
     MoveSprite(gameOver, 200, 150);
     SetDimensoesSprite(gameOver, 400,400);
+
     //loop principal do jogo
     while(JogoRodando()) {
 
@@ -49,6 +55,9 @@ int main( int argc, char* args[] ){
 
         //aqui o evento deve ser tratado e tudo deve ser atualizado
 
+        /*  Somente são executadas as funções relacionadas ao personagem
+        se o mesmo tiver vidas sobrando
+            */
         if(player.getVida() >= 0) {
             player.MovePersonagem(meuTeclado, mundo.plataformas);
             player.VerificaDano();
@@ -60,16 +69,17 @@ int main( int argc, char* args[] ){
 
         //todas as chamadas de desenho devem ser feitas aqui na ordem desejada
 
-        DesenhaAnimacao(player.getAnimacao());
         mundo.DesenhaChao();
+        DesenhaAnimacao(player.getAnimacao());
 
         PreparaCameraFixa();
 
         hud.DesenhaVidas(player.getVida());
+
         EscreveDoubleDireita(GetFPS(), 1, PIG_LARG_TELA-100, PIG_ALT_TELA - 100, {255,0,255,255});
         EscreveInteiroCentralizado(player.getX(), 100, 300);
         EscreveInteiroCentralizado(player.getY(), 100, 350);
-        EscreveInteiroCentralizado(player.getVida(), 100, 400, VERMELHO);
+        EscreveIntairoCentralizado(player.getVida(), 100, 400, VERMELHO);
 
         if(player.getVida() <= 0) {
             DesenhaSprite(gameOver);
