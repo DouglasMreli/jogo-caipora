@@ -2,27 +2,27 @@
 #define HUD_H_INCLUDED
 
 /*
-    Classe responsÃ¡vel por gerenciar as informaÃ§Ãµes que aparecem na tela, como a vida do personagem
+    Classe responsável por gerenciar as informações que aparecem na tela, como a vida do personagem
 */
 
 class Hud {
 private:
-    vector<int> vidas; // lista com as vidas do personagem que aparecerÃ¡ na tela
+    vector<int> vidas; // lista com as vidas do personagem que aparecerá na tela
 
 
 public:
-    //FunÃ§Ã£o que cria os sprites dos coraÃ§Ãµes que representam a vida do personagem
+    //Função que cria os sprites dos corações que representam a vida do personagem
     void CriaVidas(int qtdVida) {
-        // Cria um coraÃ§Ã£o para cada vida do personagem
+        // Cria um coração para cada vida do personagem
         for(int i = 0; i < qtdVida; i++) {
             int sprite = CriaSprite("..//imagens//coracao.png");
             MoveSprite(sprite, 100 + i*30, PIG_ALT_TELA-100);
             SetDimensoesSprite(sprite, 30, 30);
-            vidas.push_back(sprite);  // adiciona a nova vida Ã  lista de vidas
+            vidas.push_back(sprite);  // adiciona a nova vida à lista de vidas
         }
     }
 
-    // FunÃ§Ã£o que desenha as vidas na tela
+    // Função que desenha as vidas na tela
     void DesenhaVidas(int qtdVida) {
         for(int i = 0; i < qtdVida; i++) {
             DesenhaSprite(vidas[i]);

@@ -4,8 +4,8 @@
 #define V_0 600
 #define GRAV -800
 
-#define LARG_PERS 80
-
+#define LARG_PERS 100
+#define ALT_PERS  70
 class Personagem {
 
 private:
@@ -35,7 +35,7 @@ private:
     int pulo() {
         int py = y;
         float tempo = TempoDecorrido(timerPulo);
-        if (tempo > 0.6) {                           // O personagem sobre por 0.6 segundos
+        if (tempo > 0.4) {                           // O personagem sobre por 0.6 segundos
                 salto = y;                              // quando atinge esse tempo, o timer reinicia e personagem
                 ReiniciaTimer(timerPulo);    // passa a cair
                 caindo = true;
@@ -72,13 +72,29 @@ private:
                 /*Se uma colisão for detectada, a posição do personagem será
                     atualizada e o estado mudará
                     */
+
                 GetXYObjeto(plataformas[i], &xPlat, &yPlat);
                 GetDimensoesObjeto(plataformas[i], &alturaPlat, &larguraPlat);
-                if(caindo /*&& yAnterior >= yPlat + alturaPlat*/) {
-                    y = yPlat+alturaPlat;
+
+                 if(x + LARG_PERS > xPlat && xAnterior < x) {
+                    x = xPlat - larguraPlat + LARG_PERS;
+                }else if(x < xPlat + larguraPlat && xAnterior > x) {
+                    x = xPlat + larguraPlat - LARG_PERS;
+                }
+
+                if(caindo && yAnterior >= yPlat + alturaPlat-ALT_PERS) {
+                    y = yPlat+alturaPlat-ALT_PERS;
                     caindo = false;
                     parado = true;
                     return i;
+                }
+
+
+                if(y+ALT_PERS > yPlat &&  yAnterior < y) {
+                    pulando = false;
+                    caindo = true;
+                    ReiniciaTimer(timerPulo);
+                    return -1;
                 }
 
             }
@@ -119,7 +135,7 @@ public:
     void CriaPersonagem(char *arqPng, char *arqTxt) {
             //funções que carrega a animação do personagem
             animacao = CriaAnimacao(arqPng);
-            MoveAnimacao(animacao, 0, 100);
+            MoveAnimacao(animacao, x, y);
             CarregaFramesPorLinhaAnimacao(animacao, 1, 2, 5);
 
             CriaModoAnimacao(animacao, 0, 1);

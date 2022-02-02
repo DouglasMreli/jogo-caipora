@@ -4,7 +4,7 @@
 #include "personagem.h"
 #include "mundo.h"
 #include "hud.h"
-
+#include "cobra.h"
 
 PIG_Evento evento;          //evento ser tratado a cada passada do loop principal
 PIG_Teclado meuTeclado;     //variável como mapeamento do teclado
@@ -36,6 +36,10 @@ int main( int argc, char* args[] ){
     Mundo mundo(20);
     mundo.CriaChao();
 
+    // Criação da cobra
+    Cobra cobra;
+    cobra.CriaCobra();
+
     //Criação do HUD
     Hud hud;
     hud.CriaVidas(player.getVida());
@@ -63,6 +67,8 @@ int main( int argc, char* args[] ){
             player.VerificaDano();
         }
 
+        TrataAutomacaoAnimacao(cobra.getAnimacao());
+
 
         //será feita a preparação do frame que será exibido na tela
         IniciaDesenho();
@@ -70,6 +76,7 @@ int main( int argc, char* args[] ){
         //todas as chamadas de desenho devem ser feitas aqui na ordem desejada
 
         mundo.DesenhaChao();
+        DesenhaAnimacao(cobra.getAnimacao());
         DesenhaAnimacao(player.getAnimacao());
 
         PreparaCameraFixa();
@@ -79,7 +86,7 @@ int main( int argc, char* args[] ){
         EscreveDoubleDireita(GetFPS(), 1, PIG_LARG_TELA-100, PIG_ALT_TELA - 100, {255,0,255,255});
         EscreveInteiroCentralizado(player.getX(), 100, 300);
         EscreveInteiroCentralizado(player.getY(), 100, 350);
-        EscreveIntairoCentralizado(player.getVida(), 100, 400, VERMELHO);
+        EscreveInteiroCentralizado(player.getVida(), 100, 400, VERMELHO);
 
         if(player.getVida() <= 0) {
             DesenhaSprite(gameOver);

@@ -13,7 +13,7 @@
             qtdPisos = pisos;
         }
 
-        // Fun√ß√£o respons√°vel por criar as plataformas da fase
+        // FunÁ„o respons·vel por criar as plataformas da fase
         void CriaChao() {
             //carrega a plataforma do arquivo e as posicona no mundo
             for( int i = 0; i < qtdPisos; i++) {
@@ -30,7 +30,7 @@
             }
         }
 
-        // Fun√ß√£o respons√°vel por desenhar o ch√£o na tela
+        // FunÁ„o respons·vel por desenhar o ch„o na tela
         void DesenhaChao() {
             for(int i = 0; i < qtdPisos; i++) {
                 DesenhaObjeto(plataformas[i]);
