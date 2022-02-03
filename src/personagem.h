@@ -1,5 +1,6 @@
 #ifndef PERSONAGEM_H_INCLUDED
 #define PERSONAGEM_H_INCLUDED
+#include "cobra.h"
 
 #define V_0 600
 #define GRAV -800
@@ -247,12 +248,15 @@ public:
     }
 
     // Função responsável por verificar se o personagem está sofrendo dano
-    void VerificaDano() {
+    void VerificaDano(int ColisaoInimigo) {
         // O personagem pode receber dano a cada 0.5 segundos
-        if(TempoDecorrido(timerDano) > 0.5) {
+        if(TempoDecorrido(timerDano) > 1.0) {
             //Se a posição do personagem for negativa no eixo y, ele perde dano
             if(y < 0) {
-                vida = vida - 1;
+                vida = - 1;
+            }
+            if(ColisaoInimigo == 1) {
+                vida = vida-1;
             }
              ReiniciaTimer(timerDano);
         }

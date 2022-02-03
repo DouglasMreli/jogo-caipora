@@ -1,10 +1,11 @@
 #include <vector>
 
 #include "PIG.h"
+#include "cobra.h"
 #include "personagem.h"
 #include "mundo.h"
 #include "hud.h"
-#include "cobra.h"
+
 
 PIG_Evento evento;          //evento ser tratado a cada passada do loop principal
 PIG_Teclado meuTeclado;     //variável como mapeamento do teclado
@@ -62,13 +63,16 @@ int main( int argc, char* args[] ){
         /*  Somente são executadas as funções relacionadas ao personagem
         se o mesmo tiver vidas sobrando
             */
-        if(player.getVida() >= 0) {
+        if(player.getVida() > 0) {
             player.MovePersonagem(meuTeclado, mundo.plataformas);
-            player.VerificaDano();
+            player.VerificaDano(0);
         }
 
-        TrataAutomacaoAnimacao(cobra.getAnimacao());
-
+        if(cobra.getVida() > 0) {
+            cobra.VerificaAtaque(player);
+            if(cobra.getEstado() == 1)
+                TrataAutomacaoAnimacao(cobra.getAnimacao());
+        }
 
         //será feita a preparação do frame que será exibido na tela
         IniciaDesenho();
