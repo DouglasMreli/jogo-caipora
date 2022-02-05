@@ -10,6 +10,18 @@
 PIG_Evento evento;          //evento ser tratado a cada passada do loop principal
 PIG_Teclado meuTeclado;     //variável como mapeamento do teclado
 
+void VerificaFolclorario(int* folclorario) {
+    if(evento.tipoEvento == PIG_EVENTO_TECLADO) {
+            if(evento.teclado.acao == PIG_TECLA_PRESSIONADA) {
+                if (evento.teclado.tecla == PIG_TECLA_k) {
+                    switch(*folclorario){
+                        case 0: *folclorario = 1; break;
+                        case 1: *folclorario = 0; break;
+                    }
+                }
+            }
+        }
+}
 
 int main( int argc, char* args[] ){
 
@@ -27,10 +39,11 @@ int main( int argc, char* args[] ){
     //SetModoJanela(PIG_JANELA_TELACHEIA_DISPLAY);
     DefineFundo("..//imagens//florestaFundo.png");
 
+    int folclorario = 0;
 
     //Criação do personagem
     Personagem player(100, 50);
-    player.CriaPersonagem("..//imagens//sprite_andando.png", "..//imagens//spritePersonagem.txt");
+    player.CriaPersonagem("..//imagens//caipora andando.png", "..//imagens//spritePersonagem.txt");
     player.SetTimerTeclado(CriaTimer());
 
     //Criação do mundo
@@ -44,6 +57,7 @@ int main( int argc, char* args[] ){
     //Criação do HUD
     Hud hud;
     hud.CriaVidas(player.getVida());
+    hud.CriaLivro();
     int xChao, yChao;
 
     //Sprite para o GameOver
@@ -51,6 +65,10 @@ int main( int argc, char* args[] ){
     MoveSprite(gameOver, 200, 150);
     SetDimensoesSprite(gameOver, 400,400);
 
+    // Criando musica de fundo
+    CarregaBackground("..//audios//05._Stardust_Speedway_Zone.mp3");
+    SetVolumeBackground(8);
+    PlayBackground();
     //loop principal do jogo
     while(JogoRodando()) {
 
@@ -60,18 +78,22 @@ int main( int argc, char* args[] ){
 
         //aqui o evento deve ser tratado e tudo deve ser atualizado
 
-        /*  Somente são executadas as funções relacionadas ao personagem
-        se o mesmo tiver vidas sobrando
-            */
-        if(player.getVida() > 0) {
-            player.MovePersonagem(meuTeclado, mundo.plataformas);
-            player.VerificaDano(0);
-        }
+        VerificaFolclorario(&folclorario);
+        if(folclorario == 0) {
+            /*  Somente são executadas as funções relacionadas ao personagem
+            se o mesmo tiver vidas sobrando
+                */
+            if(player.getVida() > 0) {
+                player.MovePersonagem(meuTeclado, mundo.plataformas);
+                player.VerificaDano(0);
+            }
 
-        if(cobra.getVida() > 0) {
-            cobra.VerificaAtaque(player);
-            if(cobra.getEstado() == 1)
-                TrataAutomacaoAnimacao(cobra.getAnimacao());
+            if(cobra.getVida() > 0) {
+                cobra.VerificaAtaque(player);
+                if(cobra.getEstado() == 1)
+                    TrataAutomacaoAnimacao(cobra.getAnimacao());
+            }
+
         }
 
         //será feita a preparação do frame que será exibido na tela
@@ -85,6 +107,7 @@ int main( int argc, char* args[] ){
 
         PreparaCameraFixa();
 
+        DesenhaSprite(hud.getSpriteLivro());
         hud.DesenhaVidas(player.getVida());
 
         EscreveDoubleDireita(GetFPS(), 1, PIG_LARG_TELA-100, PIG_ALT_TELA - 100, {255,0,255,255});

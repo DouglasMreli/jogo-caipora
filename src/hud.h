@@ -8,7 +8,7 @@
 class Hud {
 private:
     vector<int> vidas; // lista com as vidas do personagem que aparecerá na tela
-
+    int spriteLivro;
 
 public:
     //Função que cria os sprites dos corações que representam a vida do personagem
@@ -27,6 +27,18 @@ public:
         for(int i = 0; i < qtdVida; i++) {
             DesenhaSprite(vidas[i]);
         }
+    }
+
+    // Função que cria o livro
+    void CriaLivro() {
+        // Sprite livro
+        spriteLivro = CriaSprite("..//imagens//livro//frame-01.gif");
+        MoveSprite(spriteLivro, PIG_LARG_TELA - 150, PIG_ALT_TELA - 150);
+        SetDimensoesSprite(spriteLivro, 100,100);
+    }
+
+    int getSpriteLivro() {
+        return spriteLivro;
     }
 };
 

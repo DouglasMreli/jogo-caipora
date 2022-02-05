@@ -135,7 +135,7 @@ public:
     //Função responsável por criar os sprites e setar as configurações do personagem
     void CriaPersonagem(char *arqPng, char *arqTxt) {
             //funções que carrega a animação do personagem
-            animacao = CriaAnimacao(arqPng);
+            animacao = CriaAnimacao(arqPng, 0);
             MoveAnimacao(animacao, x, y);
             CarregaFramesPorLinhaAnimacao(animacao, 1, 2, 5);
 
@@ -253,7 +253,7 @@ public:
         if(TempoDecorrido(timerDano) > 1.0) {
             //Se a posição do personagem for negativa no eixo y, ele perde dano
             if(y < 0) {
-                vida = - 1;
+                vida = vida - 1;
             }
             if(ColisaoInimigo == 1) {
                 vida = vida-1;
